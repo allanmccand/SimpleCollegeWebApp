@@ -19,11 +19,31 @@ class StudentForm extends Component {
   state = {
     signedupcourses: [],
     availablecourses: [],
-    fields:{frst_name: {validation:"validateAlpha;required", value: "", className: "half"},
-            lst_name: {validation:"validateAlpha;required", value: "", className: "half"},
-            dob: {validation:"noFutureDate;required", value: "", className: "half"},
-            age: {validation:"noNegativeNumber;required", value: "", className: "half"},
-            gpa: {validation:"validateDecimal;lessThanOrEqual:4;required", value: "", className: "half"}}
+    fields:{frst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+                                                    let fields = Object.assign({}, prevState.fields); 
+                                                    fields.frst_name.className = data;
+                                                    return fields;
+                                            })}},
+            lst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+                                                    let fields = Object.assign({}, prevState.fields); 
+                                                    fields.lst_name.className = data;
+                                                    return fields;
+                                            })}},
+            dob: {validation:"noFutureDate;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+                                                    let fields = Object.assign({}, prevState.fields); 
+                                                    fields.dob.className = data;
+                                                    return fields;
+                                            })}},
+            age: {validation:"noNegativeNumber;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+                                                    let fields = Object.assign({}, prevState.fields); 
+                                                    fields.age.className = data;
+                                                    return fields;
+                                            })}},
+            gpa: {validation:"validateDecimal;lessThanOrEqual:4;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+                                                    let fields = Object.assign({}, prevState.fields); 
+                                                    fields.gpa.className = data;
+                                                    return fields;
+                                            })}}}
   };
 
   validateStudent = async (type) => {
@@ -113,31 +133,6 @@ class StudentForm extends Component {
   }
   handleSignedUpCoursesUpdate = (data) => {this.setState({signedupcourses: data.courses})};
   handleAvailableCoursesUpdate = (data) => {this.setState({availablecourses: data.courses})};
-  handleClassNameFrstNameUpdate = (data) => {this.setState(prevState => {
-                                                    let fields = Object.assign({}, prevState.fields); 
-                                                    fields.frst_name.className = data;
-                                                    return fields;
-                                            })};
-  handleClassNameLstNameUpdate = (data) => {this.setState(prevState => {
-                                                    let fields = Object.assign({}, prevState.fields); 
-                                                    fields.lst_name.className = data;
-                                                    return fields;
-                                            })};
-  handleClassNameDobUpdate = (data) => {this.setState(prevState => {
-                                                    let fields = Object.assign({}, prevState.fields); 
-                                                    fields.dob.className = data;
-                                                    return fields;
-                                            })};
-  handleClassNameAgeUpdate = (data) => {this.setState(prevState => {
-                                                    let fields = Object.assign({}, prevState.fields); 
-                                                    fields.age.className = data;
-                                                    return fields;
-                                            })};
-  handleClassNameGpaUpdate = (data) => {this.setState(prevState => {
-                                                    let fields = Object.assign({}, prevState.fields); 
-                                                    fields.gpa.className = data;
-                                                    return fields;
-                                            })};
 
   render() {
     return (
@@ -156,7 +151,7 @@ class StudentForm extends Component {
                   id="frst_name"
                   label="First Name"
                   className={this.state.fields.frst_name.className}
-                  classNameHandler={this.handleClassNameFrstNameUpdate}
+                  classNameHandler={this.state.fields.frst_name.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
@@ -173,7 +168,7 @@ class StudentForm extends Component {
                   id="lst_name"
                   label="Last Name"
                   className={this.state.fields.lst_name.className}
-                  classNameHandler={this.handleClassNameLstNameUpdate}
+                  classNameHandler={this.state.fields.lst_name.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
@@ -192,7 +187,7 @@ class StudentForm extends Component {
                   id="dob"
                   label="Student DOB"
                   className={this.state.fields.dob.className}
-                  classNameHandler={this.handleClassNameDobUpdate}
+                  classNameHandler={this.state.fields.dob.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
@@ -214,7 +209,7 @@ class StudentForm extends Component {
                   id="age"
                   label="Age"
                   className={this.state.fields.age.className}
-                  classNameHandler={this.handleClassNameAgeUpdate}
+                  classNameHandler={this.state.fields.age.handleClassNameUpdate}
                   readOnly={true}
                   validation={this.state.fields.age.validation}
                   value={this.state.fields.age.value}
@@ -227,7 +222,7 @@ class StudentForm extends Component {
                   id="gpa"
                   label="GPA"
                   className={this.state.fields.gpa.className}
-                  classNameHandler={this.handleClassNameGpaUpdate}                  
+                  classNameHandler={this.state.fields.gpa.handleClassNameUpdate}                  
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
