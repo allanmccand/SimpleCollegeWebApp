@@ -11,15 +11,12 @@ const api = axios.create({
 
 class CreateCourse extends Component  {
   state = {
-    courses: [],
-    professors: [],
-    semesters: []
+    courses: []
   };
 
   handleUpdate = (data) => {this.setState({courses: data.courses})};
 
   async componentDidMount() {
-    this.setState({loading:true});
     api.get("/courses").then((res) => {
       this.setState({ courses: res.data });
     });

@@ -17,7 +17,6 @@ class CreateProfessor extends Component  {
   handleUpdate = (data) => {this.setState({professors: data.professors})};
 
   async componentDidMount() {
-    this.setState({loading:true});
     api.get("/professors").then((res) => {
       this.setState({ professors: res.data });
     });
