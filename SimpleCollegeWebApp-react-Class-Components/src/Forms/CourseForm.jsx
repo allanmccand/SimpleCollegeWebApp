@@ -82,16 +82,17 @@ class CourseForm extends Component {
           this.updateCourse();
         }
       } else {
-        res.data[0].course_title?this.handleClassNameCourseTitleUpdate(this.state.fields.course_title.className.replaceAll('error-field','')):this.handleClassNameCourseTitleUpdate(this.state.fields.course_title.className+' error-field');
-        res.data[0].course_level?this.handleClassNameCourseLevelUpdate(this.state.fields.course_level.className.replaceAll('error-field','')):this.handleClassNameCourseLevelUpdate(this.state.fields.course_level.className+' error-field');
-        res.data[0].year?this.handleClassNameYearUpdate(this.state.fields.year.className.replaceAll('error-field','')):this.handleClassNameYearUpdate(this.state.fields.year.className+' error-field');
-        res.data[0].professor?this.handleClassNameProfessorUpdate(this.state.fields.professor.className.replaceAll('error-field','')):this.handleClassNameProfessorUpdate(this.state.fields.professor.className+' error-field');
-        res.data[0].semester?this.handleClassNameSemesterUpdate(this.state.fields.semester.className.replaceAll('error-field','')):this.handleClassNameSemesterUpdate(this.state.fields.semester.className+' error-field');
+        res.data[0].course_title?this.state.fields.course_title.handleClassNameUpdate(this.state.fields.course_title.className.replaceAll('error-field','')):this.state.fields.course_title.handleClassNameUpdate(this.state.fields.course_title.className+' error-field');
+        res.data[0].course_level?this.state.fields.course_level.handleClassNameUpdate(this.state.fields.course_level.className.replaceAll('error-field','')):this.state.fields.course_level.handleClassNameUpdate(this.state.fields.course_level.className+' error-field');
+        res.data[0].year?this.state.fields.year.handleClassNameUpdate(this.state.fields.year.className.replaceAll('error-field','')):this.state.fields.year.handleClassNameUpdate(this.state.fields.year.className+' error-field');
+        res.data[0].professor?this.state.fields.professor.handleClassNameUpdate(this.state.fields.professor.className.replaceAll('error-field','')):this.state.fields.professor.handleClassNameUpdate(this.state.fields.professor.className+' error-field');
+        res.data[0].semester?this.state.fields.semester.handleClassNameUpdate(this.state.fields.semester.className.replaceAll('error-field','')):this.state.fields.semester.handleClassNameUpdate(this.state.fields.semester.className+' error-field');
 
         window.alert("Validation failed.");
       }
     }).catch((error)=>{
       window.alert("There was an issue validating!");
+      console.log(error)
     });
   };
 

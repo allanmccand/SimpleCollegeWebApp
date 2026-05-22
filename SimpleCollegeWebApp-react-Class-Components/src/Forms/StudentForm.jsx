@@ -60,6 +60,12 @@ class StudentForm extends Component {
           this.updateStudent();
         }
       } else {
+        res.data[0].frst_name?this.state.fields.frst_name.handleClassNameUpdate(this.state.fields.frst_name.className.replaceAll('error-field','')):this.state.fields.frst_name.handleClassNameUpdate(this.state.fields.frst_name.className+' error-field');
+        res.data[0].lst_name?this.state.fields.lst_name.handleClassNameUpdate(this.state.fields.lst_name.className.replaceAll('error-field','')):this.state.fields.lst_name.handleClassNameUpdate(this.state.fields.lst_name.className+' error-field');
+        res.data[0].dob?this.state.fields.dob.handleClassNameUpdate(this.state.fields.dob.className.replaceAll('error-field','')):this.state.fields.dob.handleClassNameUpdate(this.state.fields.dob.className+' error-field');
+        res.data[0].age?this.state.fields.age.handleClassNameUpdate(this.state.fields.age.className.replaceAll('error-field','')):this.state.fields.age.handleClassNameUpdate(this.state.fields.age.className+' error-field');
+        res.data[0].gpa?this.state.fields.gpa.handleClassNameUpdate(this.state.fields.gpa.className.replaceAll('error-field','')):this.state.fields.gpa.handleClassNameUpdate(this.state.fields.gpa.className+' error-field');
+
         window.alert("Validation failed.");
       }
     }).catch((error)=>{
