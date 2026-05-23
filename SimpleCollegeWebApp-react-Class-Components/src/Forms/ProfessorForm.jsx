@@ -115,7 +115,6 @@ class ProfessorForm extends Component {
 
   async componentDidMount() {
     if(this.props.router.params.id){
-      this.setState({loading:true});
       api.get("/professorbyid", {
           params: {
             professor_id: this.props.router.params.id
@@ -131,7 +130,6 @@ class ProfessorForm extends Component {
                             return fields;
             })
         });
-      this.setState({loading:false})
     }
   }
 
