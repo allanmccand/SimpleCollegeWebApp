@@ -14,13 +14,13 @@ import jakarta.transaction.Transactional;
 public interface CourseRepo  extends JpaRepository<Course, Integer> {
 	Course findByCourseId(int courseId);
 	
-	public final String COURSES_CUSTOM_SQL = "select course.course_id,course_title,course_level,professor.frst_name professorFrstName,professor.lst_name professorLstName,semester.value semesterval,"
+	public final String COURSES_CUSTOM_SQL = "select course.course_id,course_title courseTitle,course_level courseLevel,professor.frst_name professorFrstName,professor.lst_name professorLstName,semester.value semesterval,"
     		+ "course.professor_id,course.semester_id,course.year "
     		+ "from course\r\n"
             		+ "left join professor on professor.professor_id = course.professor_id \r\n"
             		+ "left join semester on semester.id = course.semester_id";
 	
-	public final String COURSES_SIGNUP_CUSTOM_SQL = "select course.course_id,course_title,course_level,professor.frst_name professorFrstName,professor.lst_name professorLstName,semester.value semesterval,"
+	public final String COURSES_SIGNUP_CUSTOM_SQL = "select course.course_id,course_title courseTitle,course_level courseLevel,professor.frst_name professorFrstName,professor.lst_name professorLstName,semester.value semesterval,"
     		+ "course.professor_id,course.semester_id,course.year,signup.active,student.student_id,student.frst_name studentFrstName,student.lst_name studentLstName, student.dob,"
 			+ "student.gpa, student.age\r\n"
     		+ "from course\r\n"

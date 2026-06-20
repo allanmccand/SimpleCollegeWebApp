@@ -33,22 +33,22 @@ public class CollegeService {
 
 	public List<Map<String, Object>> getCourses() {
 		return repo.findAllCoursesCustom().stream()
-				.sorted(Comparator.comparing((Map<String, Object> m) -> (String) m.get("course_title"))
-			              .thenComparing(m -> (Integer) m.get("course_level")))
+				.sorted(Comparator.comparing((Map<String, Object> m) -> (String) m.get("courseTitle"))
+			              .thenComparing(m -> (Integer) m.get("courseLevel")))
 			    .collect(Collectors.toList());
 	}
 	
 	public List<Map<String, Object>> getCoursesById(int course_id) {
 		return repo.findAllCoursesByIdCustom(course_id).stream()
-				.sorted(Comparator.comparing((Map<String, Object> m) -> (String) m.get("course_title"))
-			              .thenComparing(m -> (Integer) m.get("course_level")))
+				.sorted(Comparator.comparing((Map<String, Object> m) -> (String) m.get("courseTitle"))
+			              .thenComparing(m -> (Integer) m.get("courseLevel")))
 			    .collect(Collectors.toList());
 	}
 	
 	public List<Map<String, Object>> getSignUpCoursesByStudentIdCustom(int student_id) {
 		return repo.findAllSignUpCoursesByStudentIdCustom(student_id).stream()
-				.sorted(Comparator.comparing((Map<String, Object> m) -> (String) m.get("course_title"))
-			              .thenComparing(m -> (Integer) m.get("course_level")))
+				.sorted(Comparator.comparing((Map<String, Object> m) -> (String) m.get("courseTitle"))
+			              .thenComparing(m -> (Integer) m.get("courseLevel")))
 			    .collect(Collectors.toList());
 	}
 
@@ -86,79 +86,53 @@ public class CollegeService {
 		return semesterRepo.findAllSemestersByIdValue();
 	}
 	
-	public List<Map<String, Object>> addCourse(String course_title, int course_level, int professor_id, int semester_id, int year  ) {
-		Course course = new Course();
-		course.setCourseTitle(course_title);
-		course.setCourseLevel(course_level);
-		course.setProfessorId(professor_id);
-		course.setSemesterId(semester_id);
-		course.setYear(year);
-		
+	public List<Map<String, Object>> addCourse(Course course) {
 		repo.save(course);
-		
 		return getCourses();
 	}
 	
-	public List<Professor> addProfessor(String frst_name, String lst_name, Date dob, int age, double salary) {
-		Professor professor = new Professor();
-		professor.setFrstName(frst_name);
-		professor.setLstName(lst_name);
-		professor.setDob(dob);
-		professor.setAge(age);
-		professor.setSalary(salary);
-		
-		professorRepo.save(professor);
-		
+	public List<Professor> addProfessor(Professor prof) {
+		professorRepo.save(prof);
 		return getProfessors();
 	}
 	
-	public List<Student> addStudent(String frst_name, String lst_name, Date dob, int age, double gpa) {
-		Student student = new Student();
-		student.setFrstName(frst_name);
-		student.setLstName(lst_name);
-		student.setDob(dob);
-		student.setAge(age);
-		student.setGpa(gpa);
-		
+	public List<Student> addStudent(Student student) {
 		studentRepo.save(student);
-		
 		return getStudents();
 	}
 	
-	public void updateStudent(String frst_name, String lst_name, Date dob,
-			int age, double gpa, int student_id) {
-		Student student = studentRepo.findByStudentId(student_id);
+	public void updateStudent(Student updStudent) {
+		Student student = studentRepo.findByStudentId(updStudent.getStudentId());
 		
-		student.setFrstName(frst_name);
-		student.setLstName(lst_name);
-		student.setDob(dob);
-		student.setAge(age);
-		student.setGpa(gpa);
+		student.setFrstName(updStudent.getFrstName());
+		student.setLstName(updStudent.getLstName());
+		student.setDob(updStudent.getDob());
+		student.setAge(updStudent.getAge());
+		student.setGpa(updStudent.getGpa());
 		
 		studentRepo.save(student);
 	}
 	
-	public void updateCourse(String course_title, int course_level, int professor_id, int semester_id, int year, int course_id) {
-		Course course = repo.findByCourseId(course_id);
+	public void updateCourse(Course updCourse) {
+		Course course = repo.findByCourseId(updCourse.getCourseId());
 		
-		course.setCourseTitle(course_title);
-		course.setCourseLevel(course_level);
-		course.setProfessorId(professor_id);
-		course.setSemesterId(semester_id);
-		course.setYear(year);
+		course.setCourseTitle(updCourse.getCourseTitle());
+		course.setCourseLevel(updCourse.getCourseLevel());
+		course.setProfessorId(updCourse.getProfessorId());
+		course.setSemesterId(updCourse.getSemesterId());
+		course.setYear(updCourse.getYear());
 		
 		repo.save(course);
 	}
 	
-	public void updateProfessor(String frst_name, String lst_name, Date dob,
-			int age, double salary, int professor_id) {
-		Professor professor = professorRepo.findByProfessorId(professor_id);
+	public void updateProfessor(Professor prof) {
+		Professor professor = professorRepo.findByProfessorId(prof.getProfessorId());
 		
-		professor.setFrstName(frst_name);
-		professor.setLstName(lst_name);
-		professor.setDob(dob);
-		professor.setAge(age);
-		professor.setSalary(salary);
+		professor.setFrstName(prof.getFrstName());
+		professor.setLstName(prof.getLstName());
+		professor.setDob(prof.getDob());
+		professor.setAge(prof.getAge());
+		professor.setSalary(prof.getSalary());
 		
 		professorRepo.save(professor);
 	}

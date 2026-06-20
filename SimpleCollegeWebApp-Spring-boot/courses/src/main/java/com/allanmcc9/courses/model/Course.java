@@ -1,7 +1,8 @@
 package com.allanmcc9.courses.model;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.stereotype.Component;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,10 +22,16 @@ public class Course {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int courseId;
+	private Integer courseId;
+	@NotNull(message = "Course Title cannot be null")
+	@Pattern(regexp = "^[a-zA-Z]+$", message = "Must contain only letters")
 	private String courseTitle;
-	private int courseLevel;
-	private int professorId;
-	private int semesterId;
-	private int year;
+	@NotNull(message = "Course Level cannot be null")
+	private Integer courseLevel;
+	@NotNull(message = "Professor cannot be null")
+	private Integer professorId;
+	@NotNull(message = "Semester cannot be null")
+	private Integer semesterId;
+	@NotNull(message = "Year cannot be null")
+	private Integer year;
 }

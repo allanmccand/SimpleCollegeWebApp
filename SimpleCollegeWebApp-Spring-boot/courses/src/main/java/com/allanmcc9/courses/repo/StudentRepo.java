@@ -5,5 +5,5 @@ import com.allanmcc9.courses.model.Student;
 
 @Repository
 public interface StudentRepo extends GenericRepo<Student, Integer> {
-	Student findByStudentId(int studentId);
+	Student findByStudentId(Integer studentId);
 }

@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,11 +24,18 @@ public class Professor {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int professorId;
+	private Integer professorId;
+	@NotNull(message = "First name cannot be null")
+	@Pattern(regexp = "^[a-zA-Z]+$", message = "Must contain only letters")
 	private String frstName;
+	@NotNull(message = "Last name cannot be null")
+	@Pattern(regexp = "^[a-zA-Z]+$", message = "Must contain only letters")
 	private String lstName;
-	@JsonFormat(pattern = "MM/dd/yyyy")
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	@NotNull(message = "DOB cannot be null")
 	private Date dob;
-	private double salary = 0.00;
-	private int age = 0;
+	@NotNull(message = "Salary cannot be null")
+	private Double salary = 0.00;
+	@NotNull(message = "Age cannot be null")	
+	private Integer age = 0;
 }

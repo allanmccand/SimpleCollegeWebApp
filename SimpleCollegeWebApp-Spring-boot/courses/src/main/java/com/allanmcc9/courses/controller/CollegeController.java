@@ -1,10 +1,8 @@
 package com.allanmcc9.courses.controller;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,11 +11,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import com.allanmcc9.courses.model.Course;
 import com.allanmcc9.courses.model.Professor;
 import com.allanmcc9.courses.model.Student;
 import com.allanmcc9.courses.service.CollegeService;
-import com.allanmcc9.courses.service.ValidationService;
-
+import jakarta.validation.Valid;
 import tools.jackson.databind.ObjectMapper;
 
 @RestController
@@ -26,15 +24,7 @@ public class CollegeController {
 	@Autowired
 	CollegeService collegeService;
 	
-	@Autowired
-	ValidationService validationService;
-	
     private final ObjectMapper objectMapper = new ObjectMapper();
-	
-	@GetMapping("/validate")
-	public List<Map<String, Boolean>> validate(@RequestParam String data){
-		return validationService.validate(objectMapper.readValue(data, Map.class));
-	}
 	
 	@GetMapping("/courses")
 	public List<Map<String, Object>> getCourses(){
@@ -87,38 +77,33 @@ public class CollegeController {
 	}
 	
 	@PostMapping("/addcourse")
-	public List<Map<String, Object>> addCourse(@RequestParam String course_title, @RequestParam int course_level, @RequestParam int professor_id, @RequestParam int semester_id, @RequestParam int year  ) {
-		return collegeService.addCourse(course_title, course_level, professor_id, semester_id, year  );
+	public List<Map<String, Object>> addCourse(@Valid @RequestBody Course course) {
+		return collegeService.addCourse(course);
 	}
 	
 	@PostMapping("/addprofessor")
-	public List<Professor> addProfessor(@RequestParam String frst_name, @RequestParam String lst_name, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date dob,
-			@RequestParam int age, @RequestParam double salary) {
-		return collegeService.addProfessor(frst_name, lst_name, dob, age, salary);
+	public List<Professor> addProfessor(@Valid @RequestBody Professor prof) {
+		return collegeService.addProfessor(prof);
 	}
 	
 	@PostMapping("/addstudent")
-	public List<Student> addStudent(@RequestParam String frst_name, @RequestParam String lst_name, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date dob,
-			@RequestParam int age, @RequestParam double gpa) {
-		return collegeService.addStudent(frst_name, lst_name, dob, age, gpa);
+	public List<Student> addStudent(@Valid @RequestBody Student student) {
+		return collegeService.addStudent(student);
 	}
 	
 	@PutMapping("/updatestudent")
-	public void updateStudent(@RequestParam String frst_name, @RequestParam String lst_name, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date dob,
-			@RequestParam int age, @RequestParam double gpa, @RequestParam int student_id) {
-		collegeService.updateStudent(frst_name, lst_name, dob, age, gpa, student_id);
+	public void updateStudent(@Valid @RequestBody Student student) {
+		collegeService.updateStudent(student);
 	}
 	
 	@PutMapping("/updatecourse")
-	public void updateCourse(@RequestParam String course_title, @RequestParam int course_level, @RequestParam int professor_id,
-			@RequestParam int semester_id, @RequestParam int year, @RequestParam int course_id) {
-		collegeService.updateCourse(course_title, course_level, professor_id, semester_id, year, course_id);
+	public void updateCourse(@Valid @RequestBody Course course) {
+		collegeService.updateCourse(course);
 	}
 	
 	@PutMapping("/updateprofessor")
-	public void updateProfessor(@RequestParam String frst_name, @RequestParam String lst_name, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date dob,
-			@RequestParam int age, @RequestParam double salary, @RequestParam int professor_id) {
-		collegeService.updateProfessor(frst_name, lst_name, dob, age, salary, professor_id);
+	public void updateProfessor(@Valid @RequestBody Professor prof) {
+		collegeService.updateProfessor(prof);
 	}
 	
 	@PatchMapping("/mergesignup")
