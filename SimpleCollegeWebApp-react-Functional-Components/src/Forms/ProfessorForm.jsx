@@ -15,14 +15,14 @@ const api = axios.create({
 
 function ProfessorForm (props) {
 
-  const[fields,setFields] = useState({frst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {setFields(prevState => {
+  const[fields,setFields] = useState({frstName: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {setFields(prevState => {
                                                   let fields = Object.assign({}, prevState); 
-                                                  fields.frst_name.className = data;
+                                                  fields.frstName.className = data;
                                                   return fields;
                                           })}},
-      lst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {setFields(prevState => {
+      lstName: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {setFields(prevState => {
                                                   let fields = Object.assign({}, prevState); 
-                                                  fields.lst_name.className = data;
+                                                  fields.lstName.className = data;
                                                   return fields;
                                           })}},
       dob: {validation:"noFutureDate;required", value: "", className: "half", handleClassNameUpdate: (data) => {setFields(prevState => {
@@ -41,64 +41,19 @@ function ProfessorForm (props) {
                                                   return fields;
                                           })}}});
 
-  const validateProfessor = async (type) => {
-    let res = await api.get("/validate", {
-      params: {
-        data: JSON.stringify(fields)
-      },
-    }).then((res) => {
-      if(res.data[0].frst_name&&res.data[0].lst_name&&res.data[0].dob&&res.data[0].age&&res.data[0].salary){
-        if(type==="create"){
-          createProfessor();
-        }
-        else if(type==="update"){
-          updateProfessor();
-        }
-      } else {
-        res.data[0].frst_name?
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.frst_name.className = fields.frst_name.className.replaceAll('error-field','');return fields;}):
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.frst_name.className = fields.frst_name.className+' error-field';return fields;});
-
-        res.data[0].lst_name?
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.lst_name.className = fields.lst_name.className.replaceAll('error-field','');return fields;}):
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.lst_name.className = fields.lst_name.className+' error-field';return fields;});
-
-        res.data[0].dob?
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.dob.className = fields.dob.className.replaceAll('error-field','');return fields;}):
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.dob.className = fields.dob.className+' error-field';return fields;});
-
-        res.data[0].age?
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.age.className = fields.age.className.replaceAll('error-field','');return fields;}):
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.age.className = fields.age.className+' error-field';return fields;});            
-
-        res.data[0].salary?
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.salary.className = fields.salary.className.replaceAll('error-field','');return fields;}):
-            setFields(prevState => {let fields = Object.assign({}, prevState);fields.salary.className = fields.salary.className+' error-field';return fields;});      
-
-        window.alert("Validation failed.");
-      }
-    }).catch((error)=>{
-      window.alert("There was an issue validating!");
-    });
-  };
-
-
   const createProfessor = async () => {
-    try{
-      const res = await api.post("/addprofessor",null, {
-        params: {
-          frst_name: fields.frst_name.value,
-          lst_name: fields.lst_name.value,
+      const res = await api.post("/addprofessor",{
+          frstName: fields.frstName.value,
+          lstName: fields.lstName.value,
           dob: fields.dob.value,
           age: fields.age.value,
           salary: fields.salary.value
-        }
-      }).then((res) => {
+        }).then((res) => {
         props.handleUpdate({ professors: res.data});
         setFields(prevState => {
                           let fields = Object.assign({}, prevState); 
-                          fields.frst_name.value = "";
-                          fields.lst_name.value = "";
+                          fields.frstName.value = "";
+                          fields.lstName.value = "";
                           fields.dob.value = "";
                           fields.age.value = "";
                           fields.salary.value = "";
@@ -106,24 +61,35 @@ function ProfessorForm (props) {
       })
         window.alert("Successfully created course!")
       }).catch((error)=>{
-        window.alert("There was an issue creating a course!")
-      });
-    }catch(err){
-      window.alert("There was an issue creating a course!");
-    }
+        console.log(error)
+        if (error.response && error.response.status === 400) {
+
+          console.log(error);
+          console.log("error");
+          const errors = error.response.data.errors;
+
+          for(const myError of errors){
+            setFields(prevState => {
+                    let fields = Object.assign({}, prevState); 
+                    fields[myError.field].className = fields[myError.field].className+' error-field';
+                    return fields;
+            });
+          }
+        }
+      
+        window.alert("There was an issue!")
+    });
   };
 
   const updateProfessor = async () => {
-    let res = await api.put("/updateprofessor", null, {
-      params: {
-        frst_name: fields.frst_name.value,
-        lst_name: fields.lst_name.value,
+    let res = await api.put("/updateprofessor",{
+        frstName: fields.frstName.value,
+        lstName: fields.lstName.value,
         dob: fields.dob.value,
         age: fields.age.value,
         salary: fields.salary.value,
-        professor_id: props.router.params.id
-      },
-    }).then((res) => {
+        professorId: props.router.params.id
+      }).then((res) => {
       window.alert("Successfully Updated!")
     }).catch((error)=>{
       window.alert("There was an issue!")
@@ -142,9 +108,9 @@ function ProfessorForm (props) {
 
           setFields(prevState => {
                     let fields = Object.assign({}, prevState); 
-                    fields.frst_name.value = professorByIdRes.data.frstName;
-                    fields.lst_name.value = professorByIdRes.data.lstName;
-                    fields.dob.value = new Intl.DateTimeFormat('en-CA', {year: 'numeric',month: '2-digit',day: '2-digit'}).format(new Date(professorByIdRes.data.dob));
+                    fields.frstName.value = professorByIdRes.data.frstName;
+                    fields.lstName.value = professorByIdRes.data.lstName;
+                    fields.dob.value = new Intl.DateTimeFormat('en-CA', {year: 'numeric',month: '2-digit',day: '2-digit'}).format(new Date(professorByIdRes.data.dob+"T00:00:00.000"));
                     fields.age.value = professorByIdRes.data.age;
                     fields.salary.value = professorByIdRes.data.salary;
                     return fields;
@@ -170,36 +136,36 @@ function ProfessorForm (props) {
           <tr>
             <td>
               <TextField
-                id="frst_name"
+                id="frstName"
                 label="First Name"
-                className={fields.frst_name.className}
-                classNameHandler={fields.frst_name.handleClassNameUpdate}
+                className={fields.frstName.className}
+                classNameHandler={fields.frstName.handleClassNameUpdate}
                 onChange={(e) =>
                   setFields(prevState => {
                           let fields = Object.assign({}, prevState); 
-                          fields.frst_name.value = e.target.value;
+                          fields.frstName.value = e.target.value;
                           return fields;
                   })
                 }
-                validation={fields.frst_name.validation}
-                value={fields.frst_name.value}
+                validation={fields.frstName.validation}
+                value={fields.frstName.value}
               />
             </td>
             <td>
               <TextField
-                id="lst_name"
+                id="lstName"
                 label="Last Name"
-                className={fields.lst_name.className}
-                classNameHandler={fields.lst_name.handleClassNameUpdate}
+                className={fields.lstName.className}
+                classNameHandler={fields.lstName.handleClassNameUpdate}
                 onChange={(e) =>
                   setFields(prevState => {
                           let fields = Object.assign({}, prevState); 
-                          fields.lst_name.value = e.target.value;
+                          fields.lstName.value = e.target.value;
                           return fields;
                   })
                 }
-                validation={fields.lst_name.validation}
-                value={fields.lst_name.value}
+                validation={fields.lstName.validation}
+                value={fields.lstName.value}
               />
             </td>
           </tr>
@@ -263,12 +229,12 @@ function ProfessorForm (props) {
       </table>
       {location.pathname === "/CreateProfessor" ?
       <button
-        onClick={()=>{validateProfessor("create")}}
+        onClick={()=>{createProfessor()}}
         className="btn-center"
       >
         Create Professor
       </button>: location.pathname.includes("/ProfessorForm/") ? <button
-        onClick={()=>{validateProfessor("update")}}
+        onClick={()=>{updateProfessor()}}
         className="btn-center"
       >
         Update Professor

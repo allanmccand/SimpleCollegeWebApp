@@ -1,6 +1,6 @@
 package com.allanmcc9.courses.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Entity;
@@ -33,7 +33,7 @@ public class Professor {
 	private String lstName;
 	@JsonFormat(pattern = "yyyy-MM-dd")
 	@NotNull(message = "DOB cannot be null")
-	private Date dob;
+	private LocalDate dob;
 	@NotNull(message = "Salary cannot be null")
 	private Double salary = 0.00;
 	@NotNull(message = "Age cannot be null")	
