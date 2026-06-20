@@ -56,7 +56,7 @@ class ViewCourses extends Component {
                     id={"course" + course.course_id}
                     key={"course" + course.course_id}
                   >
-                    <Link to={`/CourseForm/${course.course_id}`} state={{ professors: this.props.professors, semesters: this.props.semesters }}>{course.course_title + " " + course.course_level}</Link>
+                    <Link to={`/CourseForm/${course.course_id}`} state={{ professors: this.props.professors, semesters: this.props.semesters }}>{course.coursetitle + " " + course.courselevel}</Link>
                   </h2>
                 </td>
                 <td>

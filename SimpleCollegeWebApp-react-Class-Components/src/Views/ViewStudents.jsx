@@ -52,7 +52,7 @@ class ViewStudents extends Component {
                     id={"studentDob" + student.studentId}
                     key={"studentDob" + student.studentId}
                   >
-                    {student.dob}
+                    { new Intl.DateTimeFormat('en-US', {month: '2-digit',day: '2-digit',year: 'numeric'}).format(new Date(student.dob+"T00:00:00.000"))}
                   </h2>
                 </td>
                 <td>

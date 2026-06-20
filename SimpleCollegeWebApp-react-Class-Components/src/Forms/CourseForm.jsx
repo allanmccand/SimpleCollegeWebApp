@@ -15,14 +15,14 @@ class CourseForm extends Component {
    state = {
     professors:[],
     semesters:[],
-    fields:{course_title: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+    fields:{courseTitle: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.course_title.className = data;
+                                                    fields.courseTitle.className = data;
                                                     return fields;
                                             })}},
-        course_level: {validation:"validateNumeric;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+        courseLevel: {validation:"validateNumeric;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.course_level.className = data;
+                                                    fields.courseLevel.className = data;
                                                     return fields;
                                             })}},
         year: {validation:"validateNumeric;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
@@ -30,14 +30,14 @@ class CourseForm extends Component {
                                                     fields.year.className = data;
                                                     return fields;
                                             })}},
-        professor: {validation:"required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+        professorId: {validation:"required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.professor.className = data;
+                                                    fields.professorId.className = data;
                                                     return fields;
                                             })}},
-        semester: {validation:"required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+        semesterId: {validation:"required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.semester.className = data;
+                                                    fields.semesterId.className = data;
                                                     return fields;
                                             })}}}
   };
@@ -51,11 +51,11 @@ class CourseForm extends Component {
       }).then((res) => {
           this.setState(prevState => {
                           let fields = Object.assign({}, prevState.fields); 
-                          fields.course_title.value = res.data[0].course_title;
-                          fields.course_level.value = res.data[0].course_level;
+                          fields.courseTitle.value = res.data[0].coursetitle;
+                          fields.courseLevel.value = res.data[0].courselevel;
                           fields.year.value = res.data[0].year;
-                          fields.professor.value = res.data[0].professor_id;
-                          fields.semester.value = res.data[0].semester_id;
+                          fields.professorId.value = res.data[0].professor_id;
+                          fields.semesterId.value = res.data[0].semester_id;
                           return fields;
           })
       });
@@ -68,45 +68,15 @@ class CourseForm extends Component {
     });
   }
 
-  validateCourse = async (type) => {
-    let res = await api.get("/validate", {
-      params: {
-        data: JSON.stringify(this.state.fields)
-      },
-    }).then((res) => {
-      if(res.data[0].course_title&&res.data[0].course_level&&res.data[0].year&&res.data[0].professor&&res.data[0].semester){
-        if(type==="create"){
-          this.createCourse();
-        }
-        else if(type==="update"){
-          this.updateCourse();
-        }
-      } else {
-        res.data[0].course_title?this.state.fields.course_title.handleClassNameUpdate(this.state.fields.course_title.className.replaceAll('error-field','')):this.state.fields.course_title.handleClassNameUpdate(this.state.fields.course_title.className+' error-field');
-        res.data[0].course_level?this.state.fields.course_level.handleClassNameUpdate(this.state.fields.course_level.className.replaceAll('error-field','')):this.state.fields.course_level.handleClassNameUpdate(this.state.fields.course_level.className+' error-field');
-        res.data[0].year?this.state.fields.year.handleClassNameUpdate(this.state.fields.year.className.replaceAll('error-field','')):this.state.fields.year.handleClassNameUpdate(this.state.fields.year.className+' error-field');
-        res.data[0].professor?this.state.fields.professor.handleClassNameUpdate(this.state.fields.professor.className.replaceAll('error-field','')):this.state.fields.professor.handleClassNameUpdate(this.state.fields.professor.className+' error-field');
-        res.data[0].semester?this.state.fields.semester.handleClassNameUpdate(this.state.fields.semester.className.replaceAll('error-field','')):this.state.fields.semester.handleClassNameUpdate(this.state.fields.semester.className+' error-field');
-
-        window.alert("Validation failed.");
-      }
-    }).catch((error)=>{
-      window.alert("There was an issue validating!");
-      console.log(error)
-    });
-  };
-
   updateCourse = async () => {
-    let res = await api.put("/updatecourse", null, {
-      params: {
-        course_title: this.state.fields.course_title.value,
-        course_level: this.state.fields.course_level.value,
-        professor_id: this.state.fields.professor.value,
-        semester_id: this.state.fields.semester.value,
+    let res = await api.put("/updatecourse", {
+        courseTitle: this.state.fields.courseTitle.value,
+        courseLevel: this.state.fields.courseLevel.value,
+        professorId: this.state.fields.professorId.value,
+        semesterId: this.state.fields.semesterId.value,
         year: this.state.fields.year.value,
-        course_id: this.props.router.params.id
-      },
-    }).then((res) => {
+        courseId: this.props.router.params.id
+      }).then((res) => {
       window.alert("Successfully Updated!")
     }).catch((error)=>{
       window.alert("There was an issue!")
@@ -114,40 +84,51 @@ class CourseForm extends Component {
   };
 
   createCourse = async () => {
-    let res = await api.post("/addcourse", null, {
-      params: {
-        course_title: this.state.fields.course_title.value,
-        course_level: this.state.fields.course_level.value,
-        professor_id: this.state.fields.professor.value,
-        semester_id: this.state.fields.semester.value,
+    console.log("add course1");
+    let res = await api.post("/addcourse", {
+        courseTitle: this.state.fields.courseTitle.value,
+        courseLevel: this.state.fields.courseLevel.value,
+        professorId: this.state.fields.professorId.value,
+        semesterId: this.state.fields.semesterId.value,
         year: this.state.fields.year.value
-      },
-    }).then((res) => {
+      }).then((res) => {
       window.alert("Successfully Created!")
       this.props.handleUpdate({ courses: res.data});
       this.setState(prevState => {
                   let fields = Object.assign({}, prevState.fields); 
-                  fields.course_title.value = "";
-                  fields.course_level.value = "";
+                  fields.courseTitle.value = "";
+                  fields.courseLevel.value = "";
                   fields.year.value = "";
-                  fields.professor.value = "";
-                  fields.semester.value = "";
+                  fields.professorId.value = "";
+                  fields.semesterId.value = "";
                   return fields;
       })
     }).catch((error)=>{
+      if (error.response && error.response.status === 400) {
+        console.log(error);
+        console.log("error");
+        const errors = error.response.data.errors;
+
+        for(const myError of errors){
+          console.log(myError.field);
+          var field = this.state.fields[myError.field];
+          field.handleClassNameUpdate(field.className+' error-field');
+        }
+      }
+      
       window.alert("There was an issue!")
     });
   };
 
   handleProfessorUpdate = (data) => {this.setState(prevState => {
                                                   let fields = Object.assign({}, prevState.fields); 
-                                                  fields.professor.value = data;
+                                                  fields.professorId.value = data;
                                                   return fields;
                                           })};
 
   handleSemesterUpdate = (data) => {this.setState(prevState => {
                                                   let fields = Object.assign({}, prevState.fields); 
-                                                  fields.semester.value = data;
+                                                  fields.semesterId.value = data;
                                                   return fields;
                                           })};                                             
 
@@ -165,45 +146,45 @@ class CourseForm extends Component {
             <tr>
               <td>
                 <TextField
-                  id="course_title"
+                  id="courseTitle"
                   label="Course Title"
-                  className={this.state.fields.course_title.className}
-                  classNameHandler={this.state.fields.course_title.handleClassNameUpdate}
+                  className={this.state.fields.courseTitle.className}
+                  classNameHandler={this.state.fields.courseTitle.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.course_title.value = e.target.value;
+                            fields.courseTitle.value = e.target.value;
                             return fields;
                     })
                   }
                   validation="validateAlpha;required"
-                  value={this.state.fields.course_title.value}
+                  value={this.state.fields.courseTitle.value}
                 />
               </td>
               <td>
                 <TextField
-                  id="course_level"
+                  id="courseLevel"
                   label="Course Level"
-                  className={this.state.fields.course_level.className}
-                  classNameHandler={this.state.fields.course_level.handleClassNameUpdate}
+                  className={this.state.fields.courseLevel.className}
+                  classNameHandler={this.state.fields.courseLevel.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.course_level.value = e.target.value;
+                            fields.courseLevel.value = e.target.value;
                             return fields;
                     })
                   }
                   validation="validateNumeric;required"
-                  value={this.state.fields.course_level.value}
+                  value={this.state.fields.courseLevel.value}
                 />                
               </td>
             </tr>
             <tr>
               <td>
-                <Combo data={this.state.professors} className={this.state.fields.professor.className} classNameHandler={this.state.fields.professor.handleClassNameUpdate} handleUpdate={this.handleProfessorUpdate} selectedValue={this.state.fields.professor.value} identifier="professor" label="Professor" validation="required"/>
+                <Combo data={this.state.professors} className={this.state.fields.professorId.className} classNameHandler={this.state.fields.professorId.handleClassNameUpdate} handleUpdate={this.handleProfessorUpdate} selectedValue={this.state.fields.professorId.value} identifier="professor" label="Professor" validation="required"/>
               </td>
               <td>
-                <Combo data={this.state.semesters} className={this.state.fields.semester.className} classNameHandler={this.state.fields.semester.handleClassNameUpdate} handleUpdate={this.handleSemesterUpdate} selectedValue={this.state.fields.semester.value} identifier="semester" label="Semester" validation="required"/>
+                <Combo data={this.state.semesters} className={this.state.fields.semesterId.className} classNameHandler={this.state.fields.semesterId.handleClassNameUpdate} handleUpdate={this.handleSemesterUpdate} selectedValue={this.state.fields.semesterId.value} identifier="semester" label="Semester" validation="required"/>
               </td>
             </tr>
             <tr>
@@ -229,12 +210,12 @@ class CourseForm extends Component {
         </table>
         {location.pathname === "/CreateCourse" ?
         <button
-          onClick={()=>{this.validateCourse("create")}}
+          onClick={()=>{this.createCourse()}}
           className="btn-center"
         >
           Create Course
         </button>: location.pathname.includes("/CourseForm/") ? <button
-          onClick={()=>{this.validateCourse("update")}}
+          onClick={()=>{this.updateCourse()}}
           className="btn-center"
         >
           Update Course

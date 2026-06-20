@@ -19,14 +19,14 @@ class StudentForm extends Component {
   state = {
     signedupcourses: [],
     availablecourses: [],
-    fields:{frst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+    fields:{frstName: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.frst_name.className = data;
+                                                    fields.frstName.className = data;
                                                     return fields;
                                             })}},
-            lst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+            lstName: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.lst_name.className = data;
+                                                    fields.lstName.className = data;
                                                     return fields;
                                             })}},
             dob: {validation:"noFutureDate;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
@@ -46,70 +46,53 @@ class StudentForm extends Component {
                                             })}}}
   };
 
-  validateStudent = async (type) => {
-    let res = await api.get("/validate", {
-      params: {
-        data: JSON.stringify(this.state.fields)
-      },
-    }).then((res) => {
-      if(res.data[0].frst_name&&res.data[0].lst_name&&res.data[0].dob&&res.data[0].age&&res.data[0].gpa){
-        if(type==="create"){
-          this.createStudent();
-        }
-        else if(type==="update"){
-          this.updateStudent();
-        }
-      } else {
-        res.data[0].frst_name?this.state.fields.frst_name.handleClassNameUpdate(this.state.fields.frst_name.className.replaceAll('error-field','')):this.state.fields.frst_name.handleClassNameUpdate(this.state.fields.frst_name.className+' error-field');
-        res.data[0].lst_name?this.state.fields.lst_name.handleClassNameUpdate(this.state.fields.lst_name.className.replaceAll('error-field','')):this.state.fields.lst_name.handleClassNameUpdate(this.state.fields.lst_name.className+' error-field');
-        res.data[0].dob?this.state.fields.dob.handleClassNameUpdate(this.state.fields.dob.className.replaceAll('error-field','')):this.state.fields.dob.handleClassNameUpdate(this.state.fields.dob.className+' error-field');
-        res.data[0].age?this.state.fields.age.handleClassNameUpdate(this.state.fields.age.className.replaceAll('error-field','')):this.state.fields.age.handleClassNameUpdate(this.state.fields.age.className+' error-field');
-        res.data[0].gpa?this.state.fields.gpa.handleClassNameUpdate(this.state.fields.gpa.className.replaceAll('error-field','')):this.state.fields.gpa.handleClassNameUpdate(this.state.fields.gpa.className+' error-field');
-
-        window.alert("Validation failed.");
-      }
-    }).catch((error)=>{
-      window.alert("There was an issue validating!")
-    });
-  };
-
   createStudent = async () => {
-    let res = await api.post("/addstudent", null, {
-    params: {
-      frst_name: this.state.fields.frst_name.value,
-      lst_name: this.state.fields.lst_name.value,
+    console.log(this.state.fields.dob.value)
+    let res = await api.post("/addstudent", {
+      frstName: this.state.fields.frstName.value,
+      lstName: this.state.fields.lstName.value,
       dob: this.state.fields.dob.value,
       age: this.state.fields.age.value,
       gpa: this.state.fields.gpa.value
-    },
     }).then((res) => {
       window.alert("Successfully created student!")
       this.props.handleUpdate({ students: res.data});
       this.setState(prevState => {
                                   let fields = Object.assign({}, prevState.fields); 
-                                  fields.frst_name.value = "";
-                                  fields.lst_name.value = "";
+                                  fields.frstName.value = "";
+                                  fields.lstName.value = "";
                                   fields.dob.value = "";
                                   fields.age.value = "";
                                   fields.gpa.value = "";
                                   return fields;
       })
     }).catch((error)=>{
-      window.alert("There was an issue creating student!")
+      if (error.response && error.response.status === 400) {
+
+        console.log(error);
+        console.log("error");
+        const errors = error.response.data.errors;
+
+        for(const myError of errors){
+          console.log(myError.field);
+          var field = this.state.fields[myError.field];
+          field.handleClassNameUpdate(field.className+' error-field');
+        }
+      }
+      
+      window.alert("There was an issue!")
     });
   };
 
   updateStudent = async () => {
-    let res = await api.put("/updatestudent", null, {
-      params: {
-        frst_name: this.state.fields.frst_name.value,
-        lst_name: this.state.fields.lst_name.value,
+    let res = await api.put("/updatestudent", {
+        frstName: this.state.fields.frstName.value,
+        lstName: this.state.fields.lstName.value,
         dob: this.state.fields.dob.value,
         age: this.state.fields.age.value,
         gpa: this.state.fields.gpa.value,
-        student_id: this.props.router.params.id
-      },
-    }).then((res) => {
+        studentId: this.props.router.params.id
+      }).then((res) => {
       window.alert("Successfully Updated!")
     }).catch((error)=>{
       window.alert("There was an issue!")
@@ -125,9 +108,9 @@ class StudentForm extends Component {
         }).then((res) => {
             this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.frst_name.value = res.data[0].studentfrstname;
-                            fields.lst_name.value = res.data[0].studentlstname;
-                            fields.dob.value = new Intl.DateTimeFormat('en-CA', {year: 'numeric',month: '2-digit',day: '2-digit'}).format(new Date(res.data[0].dob));
+                            fields.frstName.value = res.data[0].studentfrstname;
+                            fields.lstName.value = res.data[0].studentlstname;
+                            fields.dob.value = new Intl.DateTimeFormat('en-CA', {year: 'numeric',month: '2-digit',day: '2-digit'}).format(new Date(res.data[0].dob+"T00:00:00.000"));
                             fields.age.value = res.data[0].age;
                             fields.gpa.value = res.data[0].gpa;
                             return fields;
@@ -154,36 +137,36 @@ class StudentForm extends Component {
             <tr>
               <td>
                 <TextField
-                  id="frst_name"
+                  id="frstName"
                   label="First Name"
-                  className={this.state.fields.frst_name.className}
-                  classNameHandler={this.state.fields.frst_name.handleClassNameUpdate}
+                  className={this.state.fields.frstName.className}
+                  classNameHandler={this.state.fields.frstName.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.frst_name.value = e.target.value;
+                            fields.frstName.value = e.target.value;
                             return fields;
                     })
                   }
-                  validation={this.state.fields.frst_name.validation}
-                  value={this.state.fields.frst_name.value}
+                  validation={this.state.fields.frstName.validation}
+                  value={this.state.fields.frstName.value}
                 />
               </td>
               <td>
                 <TextField
-                  id="lst_name"
+                  id="lstName"
                   label="Last Name"
-                  className={this.state.fields.lst_name.className}
-                  classNameHandler={this.state.fields.lst_name.handleClassNameUpdate}
+                  className={this.state.fields.lstName.className}
+                  classNameHandler={this.state.fields.lstName.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.lst_name.value = e.target.value;
+                            fields.lstName.value = e.target.value;
                             return fields;
                     })
                   }
-                  validation={this.state.fields.lst_name.validation}
-                  value={this.state.fields.lst_name.value}
+                  validation={this.state.fields.lstName.validation}
+                  value={this.state.fields.lstName.value}
                 />
               </td>
             </tr>
@@ -247,12 +230,12 @@ class StudentForm extends Component {
         </table>
         {location.pathname === "/CreateStudent" ?
         <button
-          onClick={()=>{this.validateStudent("create")}}
+          onClick={()=>{this.createStudent()}}
           className="btn-center"
         >
           Create Student
         </button>: location.pathname.includes("/StudentForm/") ? <button
-          onClick={()=>{this.validateStudent("update")}}
+          onClick={()=>{this.updateStudent()}}
           className="btn-center"
         >
           Update Student

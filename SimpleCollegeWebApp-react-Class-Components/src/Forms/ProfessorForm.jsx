@@ -16,14 +16,14 @@ const api = axios.create({
 class ProfessorForm extends Component {
 
   state = {
-    fields:{frst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+    fields:{frstName: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.frst_name.className = data;
+                                                    fields.frstName.className = data;
                                                     return fields;
                                             })}},
-        lst_name: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
+        lstName: {validation:"validateAlpha;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
                                                     let fields = Object.assign({}, prevState.fields); 
-                                                    fields.lst_name.className = data;
+                                                    fields.lstName.className = data;
                                                     return fields;
                                             })}},
         dob: {validation:"noFutureDate;required", value: "", className: "half", handleClassNameUpdate: (data) => {this.setState(prevState => {
@@ -43,70 +43,52 @@ class ProfessorForm extends Component {
                                             })}}}
   };
 
-  validateProfessor = async (type) => {
-    let res = await api.get("/validate", {
-      params: {
-        data: JSON.stringify(this.state.fields)
-      },
-    }).then((res) => {
-      if(res.data[0].frst_name&&res.data[0].lst_name&&res.data[0].dob&&res.data[0].age&&res.data[0].salary){
-        if(type==="create"){
-          this.createProfessor();
-        }
-        else if(type==="update"){
-          this.updateProfessor();
-        }
-      } else {
-        res.data[0].frst_name?this.state.fields.frst_name.handleClassNameUpdate(this.state.fields.frst_name.className.replaceAll('error-field','')):this.state.fields.frst_name.handleClassNameUpdate(this.state.fields.frst_name.className+' error-field');
-        res.data[0].lst_name?this.state.fields.lst_name.handleClassNameUpdate(this.state.fields.lst_name.className.replaceAll('error-field','')):this.state.fields.lst_name.handleClassNameUpdate(this.state.fields.lst_name.className+' error-field');
-        res.data[0].dob?this.state.fields.dob.handleClassNameUpdate(this.state.fields.dob.className.replaceAll('error-field','')):this.state.fields.dob.handleClassNameUpdate(this.state.fields.dob.className+' error-field');
-        res.data[0].age?this.state.fields.age.handleClassNameUpdate(this.state.fields.age.className.replaceAll('error-field','')):this.state.fields.age.handleClassNameUpdate(this.state.fields.age.className+' error-field');
-        res.data[0].salary?this.state.fields.salary.handleClassNameUpdate(this.state.fields.salary.className.replaceAll('error-field','')):this.state.fields.salary.handleClassNameUpdate(this.state.fields.salary.className+' error-field');
-
-        window.alert("Validation failed.");
-      }
-    }).catch((error)=>{
-      window.alert("There was an issue validating!");
-    });
-  };
-
   createProfessor = async () => {
-    let res = await api.post("/addprofessor", null, {
-      params: {
-        frst_name: this.state.fields.frst_name.value,
-        lst_name: this.state.fields.lst_name.value,
+    let res = await api.post("/addprofessor", {
+        frstName: this.state.fields.frstName.value,
+        lstName: this.state.fields.lstName.value,
         dob: this.state.fields.dob.value,
         age: this.state.fields.age.value,
         salary: this.state.fields.salary.value
-      },
-    }).then((res) => {
+      }).then((res) => {
       window.alert("Successfully Created!")
       this.props.handleUpdate({ professors: res.data});
       this.setState(prevState => {
                                   let fields = Object.assign({}, prevState.fields); 
-                                  fields.frst_name.value = "";
-                                  fields.lst_name.value = "";
+                                  fields.frstName.value = "";
+                                  fields.lstName.value = "";
                                   fields.dob.value = "";
                                   fields.age.value = "";
                                   fields.salary.value = "";
                                   return fields;
       })
     }).catch((error)=>{
-      window.alert("There was an issue creating professor!")
+      if (error.response && error.response.status === 400) {
+
+        console.log(error);
+        console.log("error");
+        const errors = error.response.data.errors;
+
+        for(const myError of errors){
+          console.log(myError.field);
+          var field = this.state.fields[myError.field];
+          field.handleClassNameUpdate(field.className+' error-field');
+        }
+      }
+      
+      window.alert("There was an issue!")
     });
   };
 
   updateProfessor = async () => {
-    let res = await api.put("/updateprofessor", null, {
-      params: {
-        frst_name: this.state.fields.frst_name.value,
-        lst_name: this.state.fields.lst_name.value,
+    let res = await api.put("/updateprofessor", {
+        frstName: this.state.fields.frstName.value,
+        lstName: this.state.fields.lstName.value,
         dob: this.state.fields.dob.value,
         age: this.state.fields.age.value,
         salary: this.state.fields.salary.value,
-        professor_id: this.props.router.params.id
-      },
-    }).then((res) => {
+        professorId: this.props.router.params.id
+      }).then((res) => {
       window.alert("Successfully Updated!")
     }).catch((error)=>{
       window.alert("There was an issue!")
@@ -122,9 +104,9 @@ class ProfessorForm extends Component {
         }).then((res) => {
             this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.frst_name.value = res.data.frstName;
-                            fields.lst_name.value = res.data.lstName;
-                            fields.dob.value = new Intl.DateTimeFormat('en-CA', {year: 'numeric',month: '2-digit',day: '2-digit'}).format(new Date(res.data.dob));
+                            fields.frstName.value = res.data.frstName;
+                            fields.lstName.value = res.data.lstName;
+                            fields.dob.value = new Intl.DateTimeFormat('en-CA', {year: 'numeric',month: '2-digit',day: '2-digit'}).format(new Date(res.data.dob+"T00:00:00.000"));
                             fields.age.value = res.data.age;
                             fields.salary.value = res.data.salary;
                             return fields;
@@ -147,36 +129,36 @@ class ProfessorForm extends Component {
             <tr>
               <td>
                 <TextField
-                  id="frst_name"
+                  id="frstName"
                   label="First Name"
-                  className={this.state.fields.frst_name.className}
-                  classNameHandler={this.state.fields.frst_name.handleClassNameUpdate}
+                  className={this.state.fields.frstName.className}
+                  classNameHandler={this.state.fields.frstName.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.frst_name.value = e.target.value;
+                            fields.frstName.value = e.target.value;
                             return fields;
                     })
                   }
-                  validation={this.state.fields.frst_name.validation}
-                  value={this.state.fields.frst_name.value}
+                  validation={this.state.fields.frstName.validation}
+                  value={this.state.fields.frstName.value}
                 />
               </td>
               <td>
                 <TextField
-                  id="lst_name"
+                  id="lstName"
                   label="Last Name"
-                  className={this.state.fields.lst_name.className}
-                  classNameHandler={this.state.fields.lst_name.handleClassNameUpdate}
+                  className={this.state.fields.lstName.className}
+                  classNameHandler={this.state.fields.lstName.handleClassNameUpdate}
                   onChange={(e) =>
                     this.setState(prevState => {
                             let fields = Object.assign({}, prevState.fields); 
-                            fields.lst_name.value = e.target.value;
+                            fields.lstName.value = e.target.value;
                             return fields;
                     })
                   }
-                  validation={this.state.fields.lst_name.validation}
-                  value={this.state.fields.lst_name.value}
+                  validation={this.state.fields.lstName.validation}
+                  value={this.state.fields.lstName.value}
                 />
               </td>
             </tr>
@@ -240,12 +222,12 @@ class ProfessorForm extends Component {
         </table>
         {location.pathname === "/CreateProfessor" ?
         <button
-          onClick={()=>{this.validateProfessor("create")}}
+          onClick={()=>{this.createProfessor()}}
           className="btn-center"
         >
           Create Professor
         </button>: location.pathname.includes("/ProfessorForm/") ? <button
-          onClick={()=>{this.validateProfessor("update")}}
+          onClick={()=>{this.updateProfessor()}}
           className="btn-center"
         >
           Update Professor
